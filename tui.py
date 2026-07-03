@@ -18,6 +18,12 @@ from chords import (
 
 BANNER_FONT = "banner"
 
+# A detected chord is the headline result, so it gets a bold, saturated color
+# that reads clearly against the panel's blue border. Everything else (bare
+# held notes, alternates, history) stays neutral/dim so the chord stands out.
+CHORD_STYLE = "bold green"
+NOTE_STYLE = "bold grey62"
+
 
 @lru_cache(maxsize=1)
 def _figlet() -> Figlet:
@@ -55,15 +61,15 @@ def _primary_line(held_notes: list[int], result: ChordResult, banner: bool) -> T
         text = Text("—", style="dim", justify="center")
         return _pad_to_banner_height(text) if banner else text
     if result.kind == "single":
-        return _styled_label(midi_to_pitch_class(held_notes[0]), "bold", banner)
+        return _styled_label(midi_to_pitch_class(held_notes[0]), NOTE_STYLE, banner)
     if result.kind == "interval":
         names = unique_pitch_classes_lowest_first(held_notes)
-        return _styled_label(" + ".join(names), "bold", banner)
+        return _styled_label(" + ".join(names), NOTE_STYLE, banner)
     # kind == "chords"
     if result.primary is None:
         text = Text("no chord match", style="dim italic", justify="center")
         return _pad_to_banner_height(text) if banner else text
-    return _styled_label(str(result.primary), "bold cyan", banner)
+    return _styled_label(str(result.primary), CHORD_STYLE, banner)
 
 
 def build_display(
